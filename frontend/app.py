@@ -2,10 +2,10 @@ import streamlit as st
 from loguru import logger
 import requests
 
-from api_client import health, calcul
+from api_client import calcul
 
 logger.remove()
-logger.add("./frontend/logs/dev_frontend.log",
+logger.add("./logs/dev_frontend.log",
           rotation="10 MB",
           retention="7 days",
           compression="zip",

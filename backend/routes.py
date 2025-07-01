@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from backend.modules.calcul import square
-from backend.schemas import Integer
+from modules.calcul import square
+from schemas import Integer
 
 router = APIRouter(prefix='/api')
 

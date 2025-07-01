@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from loguru import logger
 
-from backend.routes import router
+from routes import router
 
 app = FastAPI()
 
@@ -9,7 +9,7 @@ app.include_router(router)
 
 logger.remove()
 
-logger.add("./backend/logs/dev_backend.log",
+logger.add("./logs/dev_backend.log",
           rotation="10 MB",
           retention="7 days",
           compression="zip",
