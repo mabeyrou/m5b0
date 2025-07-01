@@ -5,7 +5,7 @@ import requests
 from api_client import health, calcul
 
 logger.remove()
-logger.add("./streamlit/logs/dev_streamlit.log",
+logger.add("./frontend/logs/dev_frontend.log",
           rotation="10 MB",
           retention="7 days",
           compression="zip",

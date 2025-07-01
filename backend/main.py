@@ -9,7 +9,7 @@ app.include_router(router)
 
 logger.remove()
 
-logger.add("./api/logs/dev_api.log",
+logger.add("./backend/logs/dev_backend.log",
           rotation="10 MB",
           retention="7 days",
           compression="zip",
