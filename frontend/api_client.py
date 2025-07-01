@@ -13,9 +13,9 @@ def health():
         logger.error(f"API health check failed: {error}")
         return {"is_running": False, "status": "offline"}
     
-def calcul():
+def calcul(form_data: int):
     try:
-        response = requests.get(url=f'{API_URL}/calcul', timeout=5)
+        response = requests.post(url=f'{API_URL}/calcul', json=form_data, timeout=5)
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as error:
