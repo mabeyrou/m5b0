@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
-from ..main import app
-from ..modules.calcul import square
+from main import app
+from modules.calcul import square
 
 client = TestClient(app)
 
