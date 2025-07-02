@@ -31,23 +31,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
-      - name: Build and push with Docker Compose
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        run: docker-compose -f docker-compose.yml push
+      # - name: Build and push with Docker Compose
+      #   env:
+      #     DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      #   run: docker-compose -f docker-compose.yml push
 
-      # - name: Build and push Docker image
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     push: true
-      #     tags: |
-      #       ${{ secrets.DOCKER_USERNAME }}/m0b5:latest
-      #       ${{ secrets.DOCKER_USERNAME }}/m0b5:${{ github.sha }}
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/m0b5:latest
+            ${{ secrets.DOCKER_USERNAME }}/m0b5:${{ github.sha }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
 
-    #     cache-from: type=local,src=/tmp/.buildx-cache
-    #     cache-to: type=local,dest=/tmp/.buildx-cache-new
-    # - name: Move new cache
-    #   run: |
-    #     rm -rf /tmp/.buildx-cache
-    #     mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+      - name: Move new cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
