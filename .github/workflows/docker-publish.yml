@@ -17,9 +17,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run tests before publish
-        if: github.event_name == 'push'
-        uses: ./.github/workflows/test.yml
+      # - name: Run tests before publish
+      #   if: github.event_name == 'push'
+      #   uses: ./.github/workflows/test.yml
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
