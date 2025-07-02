@@ -5,6 +5,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      image: ${{ secrets.DOCKER_USERNAME }}/m5b0-backend
     ports:
       - "8000:8000"
     env_file:
@@ -25,6 +26,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      image: ${{ secrets.DOCKER_USERNAME }}/m5b0-frontend
     ports:
       - "8501:8501"
     env_file:
