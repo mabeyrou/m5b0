@@ -1,11 +1,15 @@
 from fastapi import FastAPI
 from loguru import logger
+from prometheus_fastapi_instrumentator import Instrumentator
 
 from routes import router
 
 app = FastAPI()
 
 app.include_router(router)
+
+instrumentator = Instrumentator()
+instrumentator.instrument(app).expose(app)
 
 logger.remove()
 

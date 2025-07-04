@@ -5,7 +5,7 @@ from loguru import logger
 
 load_dotenv()
 
-API_URL = getenv('BACKEND_URL')
+API_URL = getenv('API_URL')
 
 def calcul(form_data: int):
     try:

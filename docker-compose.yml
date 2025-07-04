@@ -7,7 +7,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "${API_PORT}:${API_PORT}"
     env_file:
       - .env 
     environment:
@@ -16,11 +16,7 @@ services:
       - ./backend:/app
     networks:
       - app-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - monitoring
 
   frontend:
     # image: marou974/m0b5-front:${FRONT_VERSION}   # to test remote images
@@ -28,18 +24,100 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "8501:8501"
+      - "${STREAMLIT_PORT}:${STREAMLIT_PORT}"
     env_file:
       - .env 
     depends_on:
       - backend
     environment:
-      - API_URL=${API_URL:-http://backend:8000}
+      - API_URL=${API_URL:-http://backend:8000/api}
     volumes:
       - ./frontend:/app
     networks:
       - app-network
 
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node_exporter
+    restart: unless-stopped
+    ports:
+      - "${NODE_EXPORTER_PORT}:${NODE_EXPORTER_PORT}"
+    env_file:
+      - .env 
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "${PROMETHEUS_PORT}:${PROMETHEUS_PORT}"
+    env_file:
+      - .env 
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+    depends_on:
+      - backend
+      - node-exporter
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "${GRAFANA_PORT}:${GRAFANA_PORT}"
+    env_file:
+      - .env 
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_INSTALL_PLUGINS: "grafana-piechart-panel"
+    volumes:
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime_kuma
+    ports:
+      - "${UPTIME_KUMA_PORT}:${UPTIME_KUMA_PORT}"
+    env_file:
+      - .env 
+    volumes:
+      - uptime-kuma-data:/app/data
+    restart: unless-stopped
+    networks:
+      - monitoring
+
+volumes:
+  uptime-kuma-data:
+  grafana-data:
+  prometheus-data:
+
 networks:
   app-network:
+    driver: bridge
+  monitoring:
     driver: bridge
