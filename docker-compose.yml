@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend:
-    # image: marou974/m0b5-back:${BACK_VERSION}   # to test remote images
+    # image: marou974/m0b5-back:${APP_VERSION}   # to test remote images
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -19,7 +19,7 @@ services:
       - monitoring
 
   frontend:
-    # image: marou974/m0b5-front:${FRONT_VERSION}   # to test remote images
+    # image: marou974/m0b5-front:${APP_VERSION}   # to test remote images
     build:
       context: ./frontend
       dockerfile: Dockerfile
